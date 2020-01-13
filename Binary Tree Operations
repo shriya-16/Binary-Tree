@@ -1,0 +1,120 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+struct Node{
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+struct Node* newNode(int data){
+    struct Node* temp = new Node;
+    temp->data = data;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+
+void insert(struct Node* root, int data){
+    queue<struct Node*> q;
+    q.push(root);
+    while(!q.empty()){
+        struct Node* temp = q.front();
+        q.pop();
+        if(!temp->left) {
+            temp->left = newNode(data);
+            break;
+        }
+        else
+            q.push(temp->left);
+        if(!temp->right) {
+            temp->right = newNode(data);
+            break;
+        }
+        else
+            q.push(temp->right);
+    }
+}
+
+void delDeepest(struct Node* root, struct Node* last){
+    queue<struct Node*> q;
+    q.push(root);
+    struct Node* temp;
+    while(!q.empty()){
+        temp = q.front();
+        q.pop();
+        if(temp == last){
+            temp = NULL;
+            delete(last);
+            return;
+        }
+        if(temp->right){
+            if(temp->right == last){
+                temp->right = NULL;
+                delete(last);
+                return;
+            }
+            else
+                q.push(temp->right);
+        }
+        if(temp->left){
+            if(temp->left == last){
+                temp->left = NULL;
+                delete(last);
+                return;
+            }
+            else
+                q.push(temp->left);
+        }
+    }
+}
+
+struct Node* delet(struct Node* root, int key){
+    if(root == NULL)
+        return NULL;
+    if(root->left == NULL && root->right == NULL){
+        if(root->data == key)
+            return NULL;
+        else
+            return root;
+    }
+    struct Node *temp, *key_node = NULL;
+    queue<struct Node*> q;
+    q.push(root);
+    while(!q.empty()){
+        temp = q.front();
+        q.pop();
+        if(temp->data == key)
+            key_node = temp;
+        if(temp->left)
+            q.push(temp->left);
+        if(temp->right)
+            q.push(temp->right);
+    }
+    if(key_node != NULL){
+        int d = temp->data;
+        delDeepest(root, temp);
+        key_node->data = d;
+    }
+    return root;
+}
+
+void inOrder(struct Node* root){
+    if(root == NULL)
+        return;
+    inOrder(root->left);
+    cout << root->data << " ";
+    inOrder(root->right);
+}
+
+int main() {
+    struct Node* root = newNode(4);
+    insert(root, 5);
+    insert(root, 6);
+    insert(root, 7);
+    inOrder(root);
+    cout << endl;
+    root = delet(root, 5);
+    inOrder(root);
+    return 0;
+}
