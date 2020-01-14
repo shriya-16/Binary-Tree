@@ -1,0 +1,85 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+struct Node{
+    int val;
+    Node *left, *right;
+};
+
+struct Node* newNode(int data){
+    struct Node* temp = new Node();
+    temp->val = data;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+
+void insert(struct Node* root, int data){
+    
+    queue<struct Node*> q;
+    q.push(root);
+    struct Node* temp;
+    while(!q.empty()){
+        temp = q.front();
+        q.pop();
+        if(temp->left == NULL){
+            temp->left = newNode(data);
+            break;
+        }
+        else
+            q.push(temp->left);
+        if(temp->right == NULL){
+            temp->right = newNode(data);
+            break;
+        }
+        else
+            q.push(temp->right);
+    }
+}
+
+bool childrenSum(struct Node* root){
+    if(root == NULL)
+        return true;
+    if(root->left == NULL && root->right == NULL)
+        return true;
+    if(root->left == NULL)
+        if(root->val == root->right->val)
+            return childrenSum(root->right);
+        else
+            return false;
+    if(root->right == NULL)
+        if(root->val == root->left->val)
+            return childrenSum(root->left);
+        else
+            return false;
+    if(root->val == root->left->val + root->right->val)
+        return (childrenSum(root->left) && childrenSum(root->right));
+    return false;
+}
+
+void inorder(struct Node* root){
+    if(root == NULL)
+        return;
+    inorder(root->left);
+    cout << root->val << " ";
+    inorder(root->right);
+}
+
+int main(){
+    struct Node* root;
+    int n;
+    cin >> n;
+    int arr[n];
+    for(int i = 0; i < n; i++)
+        cin >> arr[i];
+        root = newNode(arr[0]);
+    for(int i = 1; i < n; i++)
+        insert(root, arr[i]);
+    inorder(root);
+    cout << endl;
+    if(childrenSum(root))
+        cout << "Yes";
+    else
+        cout << "No";
+    return 0;
+}
