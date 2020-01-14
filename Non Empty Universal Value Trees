@@ -1,0 +1,64 @@
+#include <iostream>
+#include <utility>
+using namespace std;
+
+struct Node{
+    int val;
+    struct Node *left, *right;
+};
+
+struct Node* newNode(int data){
+    struct Node* temp = new Node;
+    temp->val = data;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+
+pair<int, bool> helper(struct Node* root){
+    
+    pair<int, bool> p;
+    pair<int, bool> l;
+    pair<int, bool> r;
+    if(root == NULL){
+        p.first = 0;
+        p.second = true;
+        return p;
+    }
+    l = helper(root->left);
+    r = helper(root->right);
+    p.second = true;
+    if(!l.second || !r.second)
+        p.second = false;
+    if(root->left != NULL && root->val != root->left->val)
+        p.second = false;
+    if(root->right != NULL && root->val != root->right->val)
+        p.second = false;
+    if(p.second)    
+        p.first = l.first + r.first + 1;
+    else
+        p.first = l.first + r.first;
+    return p;
+    
+}
+
+//This function counts the number of on empty universal value trees in a given tree
+int count_univals(struct Node* root){       
+    pair<int, bool> p;
+    p = helper(root);
+    return p.first;
+}
+
+int main() {
+    struct Node* root;
+    
+    root = newNode(0);                          //The tree looks like this           0
+    root->left = newNode(1);                                                        |  |
+    root->right = newNode(0);                                                      1    0
+    root->right->left = newNode(1);                                                    |  |
+    root->right->left->left = newNode(1);                                              1  0
+    root->right->left->right = newNode(1);                                            |  |
+    root->right->right = newNode(0);                                                  1   1
+    cout << count_univals(root) << endl;
+  
+    return 0;
+}
