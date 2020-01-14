@@ -1,53 +1,35 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <queue>
 using namespace std;
 
 struct Node{
-    int data;
-    struct Node* left, *right;
+    int val;
+    Node *left, *right;
 };
 
 struct Node* newNode(int data){
     struct Node* temp = new Node;
-    temp->data = data;
+    temp->val = data;
     temp->left = temp->right = NULL;
     return temp;
 }
 
-void insert(struct Node* root, int data){
-    queue<struct Node*> q;
-    q.push(root);
-    while(!q.empty()){
-        struct Node* temp = q.front();
-        q.pop();
-        if(!temp->left){
-            temp->left = newNode(data);
-            break;
-        }
-        else
-            q.push(temp->right);
-        if(!temp->right){
-            temp->right = newNode(data);
-            break;
-        }
-        else
-            q.push(temp->right);
-    }
-}
-
 bool isContinuous(struct Node* root){
+    if(root == NULL)
+        return true;
     queue<struct Node*> q;
     q.push(root);
     struct Node* temp;
     while(!q.empty()){
         temp = q.front();
         q.pop();
-        if(temp->left){
-            if(abs(temp->data - temp->left->data) != 1)
+        if(temp->left != NULL){ 
+            if(abs(temp->val - temp->left->val) != 1)
                 return false;
             q.push(temp->left);
         }
-        if(temp->right){
-            if(abs(temp->data - temp->right->data) != 1)
+        if(temp->right != NULL){ 
+            if(abs(temp->val - temp->right->val) != 1)
                 return false;
             q.push(temp->right);
         }
@@ -55,26 +37,16 @@ bool isContinuous(struct Node* root){
     return true;
 }
 
-void inorder(struct Node* root){
-    if(root == NULL)
-        return;
-    inorder(root->left);
-    cout << root->data << " ";
-    inorder(root->right);
-}
-
 int main(){
     struct Node* root = newNode(3);
-    insert(root, 2);
-    insert(root, 4);
-    insert(root, 1);
-    insert(root, 3);
-    insert(root, 5);
-    inorder(root);
-    cout << endl;
-    //if(isContinuous(root))
-     //   cout << "YES";
-    //else
-    //    cout << "NO";
+    root->left = newNode(2);
+    root->right = newNode(4);
+    root->left->left = newNode(1);
+    root->left->right = newNode(3);
+    root->right->left = newNode(5);
+    if(isContinuous(root))
+        cout << "Yes ";
+    else
+        cout << "No";
     return 0;
 }
