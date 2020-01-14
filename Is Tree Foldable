@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node{
+    int val;
+    Node *left, *right;
+};
+
+struct Node* newNode(int data){
+    struct Node* temp = new Node();
+    temp->val = data;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+
+void mirror(struct Node* root){
+    if(root == NULL)
+        return;
+    mirror(root->left);
+    mirror(root->right);
+    struct Node* temp;
+    temp = root->left;
+    root->left = root->right;
+    root->right = temp;
+}
+
+bool isStructSame(struct Node* a, struct Node* b){
+    if(a==NULL && b==NULL)
+        return true;
+    if(a!=NULL && b!=NULL && isStructSame(a->left, b->left) && isStructSame(a->right, b->right))
+        return true;
+    return false;
+}
+
+bool isFoldable(struct Node* root){
+    if(root == NULL)
+        return true;
+    mirror(root->left);
+    bool res = isStructSame(root->left, root->right);
+    mirror(root->left);
+    return res;
+}
+
+int main(){
+    struct Node* root;
+    root = newNode(1);
+    root->left = newNode(3);
+    root->right = newNode(2);
+    root->right->left = newNode(5);
+    root->left->right = newNode(4);
+    if(isFoldable(root))
+        cout << "True";
+    else
+        cout << "False";
+    return 0;
+}
