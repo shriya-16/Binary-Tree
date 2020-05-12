@@ -1,0 +1,79 @@
+#include <iostream>
+#include <stack>
+#include <algorithm>
+using namespace std;
+
+class Node{
+    public:
+    char data;
+    Node *left, *right;
+    Node(char x){
+        data = x;
+        left = right = NULL;
+    }
+};
+
+string ans = " ";
+
+void verticalString(Node* root, int col, int hd){
+    if(root == NULL)
+        return;
+    if(hd == col)
+        ans.append(1,root->data);
+    verticalString(root->left, col, hd-1);
+    verticalString(root->right, col, hd+1);
+}
+
+void buildTree(stack<char> &st, Node* root){
+    if(st.empty())
+        return;
+
+    char ch = st.top(); st.pop();
+    if(ch == '.')
+        root->left = NULL;
+    else
+        root->left = new Node(ch);
+    ch = st.top(); st.pop();
+    if(ch == '('){
+        buildTree(st, root->left);   
+        if(st.top() == ')')
+            st.pop();
+        ch = st.top(); st.pop();
+    }
+    if(ch == '.')
+        root->right = NULL;
+    else
+        root->right = new Node(ch);
+    ch = st.top(); st.pop();
+    if(ch == '(')
+        buildTree(st, root->right);
+    
+}
+
+void inorder(Node* root){
+    if(!root)
+        return;
+    inorder(root->left);
+    cout << root->data << " ";
+    inorder(root->right);
+}
+
+int main(){
+    int col;
+    string str;
+    cin >> str >> col;
+    stack<char> st;
+    for(int i = str.length()-1; i >= 0; i--)
+        st.push(str[i]);
+    Node *root = new Node(st.top());
+    st.pop(); st.pop();
+    buildTree(st, root);
+    verticalString(root, col, 0);
+    if(ans != " "){
+        sort(ans.begin(), ans.end());
+        cout << ans;   
+    }
+    else
+        cout << "Common Gandhijee!";
+    return 0;
+}
