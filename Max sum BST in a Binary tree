@@ -1,0 +1,40 @@
+class Solution {
+    struct Info{
+        int max, min;
+        bool isBST;
+        int sum, currmax;
+    };
+    
+    Info Util(TreeNode* root, int &maxsum){
+        if(root == NULL)
+            return {INT_MIN, INT_MAX, true, 0, 0};
+        if(root->left == NULL && root->right == NULL){
+            maxsum = max(maxsum, root->val);
+            
+            return {root->val, root->val, true, root->val, maxsum};
+        }
+        Info L = Util(root->left, maxsum);
+        Info R = Util(root->right, maxsum);
+        Info BST;
+        if(L.isBST && R.isBST && root->val > L.max && root->val < R.min){
+            BST.max = max(root->val, max(L.max, R.max));
+            BST.min = min(root->val, min(L.min, R.min));
+            BST.sum = root->val + L.sum + R.sum;
+            maxsum = max(maxsum, L.sum+root->val+R.sum);
+            BST.isBST = true;
+            BST.currmax = maxsum;
+            return BST;
+        }
+        BST.isBST = false;
+        BST.currmax = maxsum;
+        BST.sum = R.sum+root->val+L.sum;
+        return BST;
+    }
+    
+public:
+    int maxSumBST(TreeNode* root) {
+        int maxsum = INT_MIN;
+        Info B = Util(root, maxsum);
+        return (B.currmax > 0)?B.currmax:0;
+    }
+};
